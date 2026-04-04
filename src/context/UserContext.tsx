@@ -14,7 +14,7 @@ export interface User {
   _id: string;
   name: string;
   email: string;
-  role: string;
+  role: "admin" | "user";
   playlist: string[];
 }
 

@@ -5,6 +5,7 @@ import { useSongData, type Album } from "../context/SongContext";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useForm, type SubmitHandler } from "react-hook-form";
+import { MdDelete } from "react-icons/md";
 
 type AddAlbumFormInputs = {
   title: string;
@@ -27,6 +28,9 @@ const Admin = () => {
 
   const { albums, songs, fetchAlbums, fetchSongs } = useSongData();
 
+  const [songThumbnailFile, setSongThumbnailFile] = useState<File | null>(null);
+  const [songThumbnailSelected, setSongThumbnailSelected] = useState("");
+
   const {
     register: registerAlbum,
     handleSubmit: handleSubmitAlbum,
@@ -43,6 +47,22 @@ const Admin = () => {
 
   const [btnLoadingForAlbum, setBtnLoadingForAlbum] = useState<boolean>(false);
   const [btnLoadingForSong, setBtnLoadingForSong] = useState<boolean>(false);
+  const [btnLoadingForSongThumbnail, setBtnLoadingForSongThumbnail] =
+    useState<boolean>(false);
+  const [btnLoadingForAlbumDelete, setBtnLoadingForAlbumDelete] =
+    useState<boolean>(false);
+  const [btnLoadingForSongDelete, setBtnLoadingForSongDelete] =
+    useState<boolean>(false);
+
+  const [albumToDelete, setAlbumToDelete] = useState<string>("");
+  const [songToDelete, setSongToDelete] = useState<string>("");
+
+  const fileChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSongThumbnailFile(file);
+    }
+  };
 
   const addAlbumHandler: SubmitHandler<AddAlbumFormInputs> = async (data) => {
     const { title, description, file } = data;
@@ -100,6 +120,86 @@ const Admin = () => {
     } catch (error: any) {
       toast.error(error.response?.data?.message || "An error occured");
       setBtnLoadingForSong(false);
+    }
+  };
+
+  const addThumbnailHandler = async (id: string) => {
+    setSongThumbnailSelected(id);
+
+    if (!songThumbnailFile) return;
+
+    const formData = new FormData();
+    formData.append("file", songThumbnailFile);
+
+    setBtnLoadingForSongThumbnail(true);
+
+    try {
+      const { data } = await axios.post(
+        `${server}/api/v1/song/${id}`,
+        formData,
+        {
+          headers: {
+            token: localStorage.getItem("token"),
+          },
+        },
+      );
+
+      toast.success(data.message);
+      fetchSongs();
+      setBtnLoadingForSongThumbnail(false);
+      setSongThumbnailFile(null);
+      setSongThumbnailSelected("");
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "An error occured");
+      setBtnLoadingForSongThumbnail(false);
+      setSongThumbnailSelected("");
+    }
+  };
+
+  const deleteAlbum = async (id: string) => {
+    if (confirm("Are you sure you want to delete this album?")) {
+      setAlbumToDelete(id);
+      setBtnLoadingForAlbumDelete(true);
+      try {
+        const { data } = await axios.delete(`${server}/api/v1/album/${id}`, {
+          headers: {
+            token: localStorage.getItem("token"),
+          },
+        });
+
+        toast.success(data.message);
+        fetchSongs();
+        fetchAlbums();
+        setAlbumToDelete("");
+        setBtnLoadingForAlbumDelete(false);
+      } catch (error: any) {
+        toast.error(error.response?.data?.message || "An error occured");
+        setAlbumToDelete("");
+        setBtnLoadingForAlbumDelete(false);
+      }
+    }
+  };
+
+  const deleteSong = async (id: string) => {
+    if (confirm("Are you sure you want to delete this song?")) {
+      setSongToDelete(id);
+      setBtnLoadingForSongDelete(true);
+      try {
+        const { data } = await axios.delete(`${server}/api/v1/song/${id}`, {
+          headers: {
+            token: localStorage.getItem("token"),
+          },
+        });
+
+        toast.success(data.message);
+        fetchSongs();
+        setSongToDelete("");
+        setBtnLoadingForSongDelete(false);
+      } catch (error: any) {
+        toast.error(error.response?.data?.message || "An error occured");
+        setSongToDelete("");
+        setBtnLoadingForSongDelete(false);
+      }
     }
   };
 
@@ -219,6 +319,104 @@ const Admin = () => {
           {btnLoadingForSong ? "Please wait..." : "Add"}
         </button>
       </form>
+
+      <div className="mt-8">
+        <h3 className="text-xl font-semi-bold mb-4">Added Albums</h3>
+        <div className="flex justify-center md:justify-start gap-2 items-center flex-wrap">
+          {albums &&
+            albums.map((e, i) => {
+              return (
+                <div
+                  className="bg-primary p-4 rounded-lg shadow-md cursor-pointer"
+                  key={i}
+                  onClick={() => navigate(`/album/${e.id}`)}
+                >
+                  <img src={e.thumbnail} className="mr-1 w-52 h-52" alt="" />
+                  <h4 className="text-lg font-bold">
+                    {e.title.slice(0, 30)}...
+                  </h4>
+                  <h4 className="text-lg font-bold">
+                    {e.description.slice(0, 20)}...
+                  </h4>
+                  <button
+                    className="px-3 py-1 bg-red-500 text-white rounded cursor-pointer"
+                    disabled={
+                      btnLoadingForAlbumDelete && e.id === albumToDelete
+                    }
+                    onClick={(event) => {
+                      deleteAlbum(e.id);
+                      event.stopPropagation();
+                    }}
+                  >
+                    {btnLoadingForAlbumDelete && e.id === albumToDelete ? (
+                      <span>Loading...</span>
+                    ) : (
+                      <MdDelete />
+                    )}
+                  </button>
+                </div>
+              );
+            })}
+        </div>
+      </div>
+
+      <div className="mt-8">
+        <h3 className="text-xl font-semi-bold mb-4">Added Songs</h3>
+        <div className="flex justify-center md:justify-start gap-2 items-center flex-wrap cursor-pointer">
+          {songs &&
+            songs.map((e, i) => {
+              return (
+                <div className="bg-primary p-4 rounded-lg shadow-md" key={i}>
+                  {e.thumbnail ? (
+                    <img src={e.thumbnail} className="mr-1 w-52 h-52" alt="" />
+                  ) : (
+                    <div className="flex flex-col justify-center items-center gap-2 W-[250px]">
+                      <input
+                        type="file"
+                        onChange={fileChangeHandler}
+                        accept="image/*"
+                      />
+                      <button
+                        className="auth-btn"
+                        style={{ width: "200px" }}
+                        disabled={
+                          btnLoadingForSongThumbnail &&
+                          e.id === songThumbnailSelected
+                        }
+                        onClick={() => addThumbnailHandler(e.id)}
+                      >
+                        {btnLoadingForSongThumbnail &&
+                        e.id === songThumbnailSelected
+                          ? "Please Wait..."
+                          : "Add thumbnail"}
+                      </button>
+                    </div>
+                  )}
+                  <h4 className="text-lg font-bold">
+                    {e.title.slice(0, 30)}...
+                  </h4>
+                  <h4 className="text-lg font-bold">
+                    {e.description.slice(0, 20)}...
+                  </h4>
+                  <button
+                    className="px-3 py-1 bg-red-500 text-white rounded cursor-pointer"
+                    disabled={btnLoadingForSongDelete && e.id === songToDelete}
+                    onClick={(event) => {
+                      deleteSong(e.id);
+                      event?.stopPropagation();
+                    }}
+                  >
+                    {btnLoadingForSongDelete && e.id === songToDelete ? (
+                      <span>Loading...</span>
+                    ) : (
+                      <MdDelete />
+                    )}
+                  </button>
+                </div>
+              );
+            })}
+        </div>
+      </div>
     </div>
   );
 };
