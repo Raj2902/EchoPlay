@@ -8,7 +8,7 @@ import React, {
 } from "react";
 import toast, { Toaster } from "react-hot-toast";
 
-const server = "http://localhost:5000";
+const server = "http://localhost:5000/api/v1/user";
 
 export interface User {
   _id: string;
@@ -58,7 +58,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   ) {
     setBtnLoading(true);
     try {
-      const { data } = await axios.post(`${server}/api/v1/user/register`, {
+      const { data } = await axios.post(`${server}/register`, {
         name,
         email,
         password,
@@ -81,7 +81,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   ) {
     setBtnLoading(true);
     try {
-      const { data } = await axios.post(`${server}/api/v1/user/login`, {
+      const { data } = await axios.post(`${server}/login`, {
         email,
         password,
       });
@@ -98,7 +98,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
 
   async function fetchUser() {
     try {
-      const { data } = await axios.get(`${server}/api/v1/user/me`, {
+      const { data } = await axios.get(`${server}/me`, {
         headers: {
           token: localStorage.getItem("token"),
         },
@@ -124,7 +124,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   async function addToPlayList(id: string) {
     try {
       const { data } = await axios.post(
-        `${server}/api/v1/song/${id}`,
+        `${server}/song/${id}`,
         {},
         {
           headers: {

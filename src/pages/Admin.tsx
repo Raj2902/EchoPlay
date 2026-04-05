@@ -21,7 +21,7 @@ type AddSongFormInputs = {
 };
 
 const Admin = () => {
-  const server = "http://localhost:7000";
+  const server = "http://localhost:7000/api/v1/admin";
 
   const navigate = useNavigate();
   const { user } = useUserData();
@@ -75,15 +75,11 @@ const Admin = () => {
     setBtnLoadingForAlbum(true);
 
     try {
-      const { data } = await axios.post(
-        `${server}/api/v1/album/new`,
-        formData,
-        {
-          headers: {
-            token: localStorage.getItem("token"),
-          },
+      const { data } = await axios.post(`${server}/album/new`, formData, {
+        headers: {
+          token: localStorage.getItem("token"),
         },
-      );
+      });
 
       toast.success(data.message);
       fetchAlbums();
@@ -107,7 +103,7 @@ const Admin = () => {
     setBtnLoadingForSong(true);
 
     try {
-      const { data } = await axios.post(`${server}/api/v1/song/new`, formData, {
+      const { data } = await axios.post(`${server}/song/new`, formData, {
         headers: {
           token: localStorage.getItem("token"),
         },
@@ -134,15 +130,11 @@ const Admin = () => {
     setBtnLoadingForSongThumbnail(true);
 
     try {
-      const { data } = await axios.post(
-        `${server}/api/v1/song/${id}`,
-        formData,
-        {
-          headers: {
-            token: localStorage.getItem("token"),
-          },
+      const { data } = await axios.post(`${server}/song/${id}`, formData, {
+        headers: {
+          token: localStorage.getItem("token"),
         },
-      );
+      });
 
       toast.success(data.message);
       fetchSongs();
@@ -161,7 +153,7 @@ const Admin = () => {
       setAlbumToDelete(id);
       setBtnLoadingForAlbumDelete(true);
       try {
-        const { data } = await axios.delete(`${server}/api/v1/album/${id}`, {
+        const { data } = await axios.delete(`${server}/album/${id}`, {
           headers: {
             token: localStorage.getItem("token"),
           },
@@ -185,7 +177,7 @@ const Admin = () => {
       setSongToDelete(id);
       setBtnLoadingForSongDelete(true);
       try {
-        const { data } = await axios.delete(`${server}/api/v1/song/${id}`, {
+        const { data } = await axios.delete(`${server}/song/${id}`, {
           headers: {
             token: localStorage.getItem("token"),
           },

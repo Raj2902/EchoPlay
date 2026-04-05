@@ -8,7 +8,7 @@ import {
   type ReactNode,
 } from "react";
 
-const server = "http://localhost:8000";
+const server = "http://localhost:8000/api/v1/song";
 
 export interface Song {
   id: string;
@@ -61,7 +61,7 @@ export const SongProvider: React.FC<SongProviderProps> = ({ children }) => {
   const fetchSongs = useCallback(async () => {
     setLoading(true);
     try {
-      const { data } = await axios.get<Song[]>(`${server}/api/v1/song/all`);
+      const { data } = await axios.get<Song[]>(`${server}/all`);
       setSongs(data);
       if (data.length > 0) setSelectedSong(data[0].id.toString());
       setIsPlaying(false);
@@ -75,7 +75,7 @@ export const SongProvider: React.FC<SongProviderProps> = ({ children }) => {
   const fetchAlbums = useCallback(async () => {
     setLoading(true);
     try {
-      const { data } = await axios.get<Album[]>(`${server}/api/v1/album/all`);
+      const { data } = await axios.get<Album[]>(`${server}/album/all`);
       setAlbums(data);
     } catch (error) {
       console.log(error);
@@ -89,9 +89,7 @@ export const SongProvider: React.FC<SongProviderProps> = ({ children }) => {
   const fetchSingleSong = useCallback(async () => {
     if (!selectedSong) return;
     try {
-      const { data } = await axios.get<Song>(
-        `${server}/api/v1/song/${selectedSong}`,
-      );
+      const { data } = await axios.get<Song>(`${server}/${selectedSong}`);
       setSong(data);
     } catch (error) {
       console.log(error);
@@ -124,7 +122,7 @@ export const SongProvider: React.FC<SongProviderProps> = ({ children }) => {
     setLoading(true);
     try {
       const { data } = await axios.get<{ songs: Song[]; album: Album }>(
-        `${server}/api/v1/album/${id}`,
+        `${server}/album/${id}`,
       );
 
       setAlbumData(data.album);
