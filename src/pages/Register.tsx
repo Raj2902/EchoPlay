@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useUserData } from "../context/UserContext";
 
 const Register = () => {
@@ -7,14 +7,12 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
 
-  const navigate = useNavigate();
-
   const { registerUser, btnLoading } = useUserData();
 
   async function submitHandler(e: any) {
     e.preventDefault();
 
-    registerUser(name, email, password, navigate);
+    registerUser(name, email, password);
   }
 
   return (
