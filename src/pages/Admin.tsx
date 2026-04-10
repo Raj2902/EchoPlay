@@ -21,7 +21,7 @@ type AddSongFormInputs = {
 };
 
 const Admin = () => {
-  const server = "http://localhost:7000/api/v1/admin";
+  const server = `${import.meta.env.VITE_API_BASE_URL}/v1/admin}`;
 
   const navigate = useNavigate();
   const { user } = useUserData();

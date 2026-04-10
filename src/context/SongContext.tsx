@@ -8,7 +8,7 @@ import {
   type ReactNode,
 } from "react";
 
-const server = "http://localhost:8000/api/v1/song";
+const server = `${import.meta.env.VITE_API_BASE_URL}/v1/song`;
 
 export interface Song {
   id: string;

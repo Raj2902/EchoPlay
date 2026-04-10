@@ -24,12 +24,10 @@ const Login = () => {
         </h2>
         <form className="mt-8" onSubmit={submitHandler}>
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-1">
-              Email or username
-            </label>
+            <label className="block text-sm font-medium mb-1">Email</label>
             <input
               type="email"
-              placeholder="Email or username"
+              placeholder="Enter Email"
               className="auth-input"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
