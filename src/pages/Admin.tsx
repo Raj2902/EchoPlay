@@ -20,7 +20,7 @@ type AddSongFormInputs = {
 };
 
 const Admin = () => {
-  const server = `${import.meta.env.VITE_API_BASE_URL}/v1/admin}`;
+  const server = `${import.meta.env.VITE_API_BASE_URL}/v1/admin`;
 
   const navigate = useNavigate();
 
