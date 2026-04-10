@@ -1,6 +1,5 @@
-import { useState, type ChangeEvent, type FormEvent } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useUserData } from "../context/UserContext";
 import { useSongData, type Album } from "../context/SongContext";
 import axios from "axios";
 import toast from "react-hot-toast";
@@ -24,7 +23,6 @@ const Admin = () => {
   const server = `${import.meta.env.VITE_API_BASE_URL}/v1/admin}`;
 
   const navigate = useNavigate();
-  const { user } = useUserData();
 
   const { albums, songs, fetchAlbums, fetchSongs } = useSongData();
 

@@ -23,16 +23,11 @@ interface UserContextType {
   isAuth: boolean;
   loading: boolean;
   btnLoading: boolean;
-  loginUser: (
-    email: string,
-    password: string,
-    navigate: (path: string) => void,
-  ) => Promise<void>;
+  loginUser: (email: string, password: string) => Promise<void>;
   registerUser: (
     name: string,
     email: string,
     password: string,
-    navigate: (path: string) => void,
   ) => Promise<void>;
   logoutUser: () => void;
   addToPlayList: (id: string) => Promise<void>;
@@ -50,12 +45,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   const [isAuth, setIsAuth] = useState(false);
   const [btnLoading, setBtnLoading] = useState(false);
 
-  async function registerUser(
-    name: string,
-    email: string,
-    password: string,
-    navigate: (path: string) => void, //why do i even need navigate here??
-  ) {
+  async function registerUser(name: string, email: string, password: string) {
     setBtnLoading(true);
     try {
       const { data } = await axios.post(`${server}/register`, {
@@ -74,11 +64,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     }
   }
 
-  async function loginUser(
-    email: string,
-    password: string,
-    navigate: (path: string) => void, //why do i even need navigate here??
-  ) {
+  async function loginUser(email: string, password: string) {
     setBtnLoading(true);
     try {
       const { data } = await axios.post(`${server}/login`, {
