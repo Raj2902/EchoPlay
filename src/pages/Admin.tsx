@@ -128,7 +128,7 @@ const Admin = () => {
     setBtnLoadingForSongThumbnail(true);
 
     try {
-      const { data } = await axios.post(`${server}/song/${id}`, formData, {
+      const { data } = await axios.patch(`${server}/song/${id}`, formData, {
         headers: {
           token: localStorage.getItem("token"),
         },
